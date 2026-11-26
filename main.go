@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -23,3 +24,11 @@ func fetch(url string) (int, time.Duration) {
 	defer resp.Body.Close()
 	return resp.StatusCode, elapsed
 }
+  func main(){
+	start := time.Now()
+	for _, url := range urls{
+		status, elapsed := fetch(url)
+		fmt.Println("status code = ", status, "took: ", elapsed)
+	}
+	fmt.Println("total: ", time.Since(start))
+  }
