@@ -59,22 +59,24 @@ var urls = []string{
 	"https://httpbin.org/status/404",
 }
 
-func fetch(url string) (int, time.Duration) {
+func fetch(url string) (int, time.Duration){
 	start := time.Now()
 	resp, err := http.Get(url)
 	elapsed := time.Since(start)
-	if err != nil {
+	if err != nil{
 		return 0, elapsed
 	}
 	defer resp.Body.Close()
 	return resp.StatusCode, elapsed
 }
 
-func main() {
+func main(){
 	start := time.Now()
-	for _, url := range urls {
-		status, elapsed := fetch(url)
-		fmt.Println(url, "status: ", status, "took: ", elapsed)
+
+	for _, url := range urls{
+		response, duration := fetch(url)
+		fmt.Println(url, ": ", response, "took: ", duration)
+
 	}
 	fmt.Println("total: ", time.Since(start))
 }
