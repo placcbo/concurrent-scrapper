@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -59,24 +60,32 @@ var urls = []string{
 	"https://httpbin.org/status/404",
 }
 
-func fetch(url string) (int, time.Duration){
+func fetch(url string, wg *sync.WaitGroup){
+	defer wg.Done()
 	start := time.Now()
 	resp, err := http.Get(url)
 	elapsed := time.Since(start)
 	if err != nil{
-		return 0, elapsed
+		fmt.Println(url, ": failed, took: ", elapsed)
+		return
 	}
 	defer resp.Body.Close()
-	return resp.StatusCode, elapsed
+	fmt.Println(url, ":", resp.StatusCode, "took: ", elapsed)
 }
 
-func main(){
+func main() {
 	start := time.Now()
+	var wg sync.WaitGroup
 
 	for _, url := range urls{
-		response, duration := fetch(url)
-		fmt.Println(url, ": ", response, "took: ", duration)
-
+		wg.Add(1)
+		 go fetch(url, &wg)
 	}
-	fmt.Println("total: ", time.Since(start))
+
+	wg.Wait()
+
+	fmt.Println("total:", time.Since(start))
+
+
+
 }
